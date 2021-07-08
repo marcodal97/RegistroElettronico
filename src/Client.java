@@ -1,3 +1,4 @@
+import java.sql.SQLOutput;
 import java.util.*;
 import java.net.*;
 import java.io.*;
@@ -17,20 +18,32 @@ public class Client {
 
         try {
             client_socket = new Socket(address_ip, port);
-            Scanner from_server = new Scanner(client_socket.getInputStream());
+
+            //Scanner from_server = new Scanner(client_socket.getInputStream());
+            StringBuilder sb = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(client_socket.getInputStream()));
+
+
             var to_server = new PrintWriter(client_socket.getOutputStream());
 
             Scanner from_user = new Scanner(System.in);
 
             String message_from_server;
             String message_to_server;
+            int value;
 
             while(true){
-                message_from_server = from_server.next();
+                while((value = br.read()) != -1){
+                    char c = (char)value;
+                    if(c == '§') break;
+                    sb.append(c);
+                }
+                message_from_server = sb.toString();
+                sb.setLength(0);
                 System.out.println(message_from_server);
 
-                System.out.println("Insert message to send: ");
-                message_to_server = from_user.nextLine();
+                while((message_to_server = from_user.nextLine()).equals("")); //Per non far bloccare il programma quando si preme "invio"
+
                 to_server.println(message_to_server);
                 to_server.flush();
 
