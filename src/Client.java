@@ -24,7 +24,7 @@ public class Client {
             BufferedReader br = new BufferedReader(new InputStreamReader(client_socket.getInputStream()));
 
 
-            var to_server = new PrintWriter(client_socket.getOutputStream());
+            PrintWriter to_server = new PrintWriter(client_socket.getOutputStream());
 
             Scanner from_user = new Scanner(System.in);
 
