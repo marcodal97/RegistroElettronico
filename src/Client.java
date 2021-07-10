@@ -9,6 +9,7 @@ public class Client {
     int port;
     Socket client_socket;
 
+
     public Client(String ip, int port) {
         this.address_ip = ip;
         this.port = port;
@@ -18,40 +19,39 @@ public class Client {
 
         try {
             client_socket = new Socket(address_ip, port);
-
-            //Scanner from_server = new Scanner(client_socket.getInputStream());
             StringBuilder sb = new StringBuilder();
             BufferedReader br = new BufferedReader(new InputStreamReader(client_socket.getInputStream()));
-
-
             PrintWriter to_server = new PrintWriter(client_socket.getOutputStream());
-
             Scanner from_user = new Scanner(System.in);
 
             String message_from_server;
             String message_to_server;
             int value;
 
-            while(true){
-                while((value = br.read()) != -1){
-                    char c = (char)value;
-                    if(c == '§') break;
+            while (true) {
+                while ((value = br.read()) != -1) {
+                    char c = (char) value;
+                    if (c == '§') break;
                     sb.append(c);
                 }
                 message_from_server = sb.toString();
+                if (message_from_server.equals("Chiusura Connessione...")) return;
                 sb.setLength(0);
-                System.out.println(message_from_server);
+                System.out.print(message_from_server);
 
-                while((message_to_server = from_user.nextLine()).equals("")); //Per non far bloccare il programma quando si preme "invio"
+                while ((message_to_server = from_user.nextLine()).equals(""))
+                    ; //Per non far bloccare il programma quando si preme "invio"
 
                 to_server.println(message_to_server);
-                to_server.flush();
+                //to_server.flush();
+                if (to_server.checkError())
+                    throw new Exception();
 
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("Connessione chiusa dal server");
+            System.exit(1);
         }
-
     }
 
     public static void main(String[] args) {

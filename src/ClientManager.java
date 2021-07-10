@@ -2,45 +2,147 @@ import java.util.*;
 import java.net.*;
 import java.io.*;
 
-public class ClientManager implements Runnable {
+public class ClientManager implements Runnable{
     Socket assigned_client;
     final char end = '§';
+    private volatile boolean running = true;
 
     public ClientManager(Socket assigned_client) {
         this.assigned_client = assigned_client;
     }
 
     @Override
-    public void run() {
+    public void run(){
+        while(running){
+            try {
+                Scanner from_client = null;
+                PrintWriter to_client = null;
+                int message_from_client;
+                int utente = -1;
 
-        Scanner from_client = null;
-        PrintWriter to_client = null;
-        int utente;
+                try {
+                    from_client = new Scanner(assigned_client.getInputStream());
+                    to_client = new PrintWriter(assigned_client.getOutputStream());
 
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-        try {
-            from_client = new Scanner(assigned_client.getInputStream());
-            to_client = new PrintWriter(assigned_client.getOutputStream());
+                while (utente != 0 && utente != 1) {
+                    String welcomeMessage = "***** BENVENUTO *****\n";
+                    String menu = "1 Login\n2 Registrazione\n3 Esci";
+                    to_client.print(welcomeMessage + menu + "\nscelta: "+end);
+                    to_client.flush();
 
-        } catch (IOException e) {
-            e.printStackTrace();
+                    while(true) {
+                        if(from_client.hasNextInt() == true){
+                            message_from_client = from_client.nextInt();
+                            break;
+                        }
+                        from_client.next();
+                        to_client.print("Inserisci un numero: "+end);
+                        to_client.flush();
+                    }
+
+                    if (message_from_client == 1) {
+                        utente = login(assigned_client, from_client, to_client);
+                        if (utente == 0) direttore(assigned_client, from_client, to_client);
+                        if (utente == 1) docente(assigned_client, from_client, to_client);
+                    }
+                    if (message_from_client == 2) {
+                        registrazione(assigned_client, from_client, to_client);
+                    }
+                    if(message_from_client == 3){
+                        running = false;
+                        to_client.print("Chiusura Connessione..."+end);
+                        to_client.flush();
+                        break;
+                    }
+                }
+            }catch (Exception ex){
+                running = false;
+            }
+        }
+        System.out.println("Connessione chiusa col Client: "+assigned_client.getRemoteSocketAddress());
+    }
+
+    private void registrazione(Socket client, Scanner from_client, PrintWriter to_client){
+        int scelta = 0;
+        String pass = "";
+        Utente utente;
+
+        while(scelta != 1 && scelta != 2) {
+            to_client.print("\n-----REGISTRAZIONE-----");
+            to_client.print("\n1) Registrazione Admin");
+            to_client.print("\n2) Registrazione Docente");
+            to_client.print("\nscelta: "+end);
+            to_client.flush();
+            while(true) {
+                if(from_client.hasNextInt() == true){
+                    scelta = from_client.nextInt();
+                    break;
+                }
+                from_client.next();
+                to_client.print("Inserisci un numero: "+end);
+                to_client.flush();
+            }
         }
 
-        String welcomeMessage = "***** BENVENUTO *****\n";
-        String menu = "1 Login\n2 Registrazione";
-        to_client.print(welcomeMessage+menu+end);
+        if (scelta == 1) {
+            while(true) {
+                to_client.print("\nDigita password per registrazione: " + end);
+                to_client.flush();
+                pass = from_client.next();
+                if(pass.equals("passadmin") == false) {
+                    to_client.print("\nPassword errata, ritenta");
+                }else break;
+            }
+            utente = registrazioneUtente(client, from_client, to_client);
+            to_client.print(utente);
+            to_client.print("\nUtente registrato!\n\n");
+        }
+
+        if (scelta == 2) {
+            while(true) {
+                to_client.print("\n Digita password per registrazione: " + end);
+                to_client.flush();
+                pass = from_client.next();
+                if(pass.equals("passdoc") == false) {
+                    to_client.print("\nPassword errata, ritenta");
+                }else break;
+            }
+            utente = registrazioneUtente(client, from_client, to_client);
+            to_client.print(utente);
+            to_client.print("\nUtente registrato!\n\n");
+        }
+
+
+
+    }
+
+    private Utente registrazioneUtente(Socket client, Scanner from_client, PrintWriter to_client){
+        String username;
+        String nome;
+        String cognome;
+        String pass;
+
+        to_client.print("\n-----------------------");
+        to_client.print("\nInserisci username: "+end);
         to_client.flush();
+        username = from_client.next();
+        to_client.print("\nInserisci password: "+end);
+        to_client.flush();
+        pass = from_client.next();
+        to_client.print("\nInserisci Nome: "+end);
+        to_client.flush();
+        nome = from_client.next();
+        to_client.print("\nInserisci Cognome: "+end);
+        to_client.flush();
+        cognome = from_client.next();
 
-        int message_from_client = from_client.nextInt();
-
-        if (message_from_client == 1) {
-            utente = login(assigned_client, from_client, to_client);
-
-            if(utente == 0) direttore(assigned_client, from_client, to_client);
-            if(utente == 1) docente(assigned_client, from_client, to_client);
-        }
-
-        }
+        Utente utente = new Utente(username, pass, nome, cognome);
+        return utente;
+    }
 
     private int login(Socket client, Scanner from_client, PrintWriter to_client){
         String username;
@@ -49,16 +151,16 @@ public class ClientManager implements Runnable {
         int tipo = -1;
 
         while (tipo != 0 && tipo != 1) {
-            to_client.print("\nInserisci username" + end);
+            to_client.print("\nInserisci username: " + end);
             to_client.flush();
             username = from_client.next();
-            to_client.print("\nInserisci password"+ end);
+            to_client.print("\nInserisci password: "+ end);
             to_client.flush();
             password = from_client.next();
 
             //utente = checklogin(username, password);
             tipo = checklogin(username, password);
-            if (tipo == 2) to_client.print("\nErrati");
+            if (tipo == 2) to_client.print("Errati\n");
         }
         return tipo;
     }
