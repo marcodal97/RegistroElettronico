@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.LinkedList;
 
-public class Utente {
+public class Utente implements Serializable {
     private String username;
     private String password;
     private String nome;
@@ -15,11 +16,27 @@ public class Utente {
 
     @Override
     public String toString() {
-        return "Utente{" +
+        return
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", nome='" + nome + '\'' +
                 ", cognome='" + cognome + '\'' +
                 '}';
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public String getCognome() {
+        return cognome;
     }
 }

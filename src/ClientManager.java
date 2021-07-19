@@ -4,11 +4,13 @@ import java.io.*;
 
 public class ClientManager implements Runnable{
     Socket assigned_client;
+    Archivio archivio;
     final char end = '§';
     private volatile boolean running = true;
 
-    public ClientManager(Socket assigned_client) {
+    public ClientManager(Socket assigned_client, Archivio archivio) {
         this.assigned_client = assigned_client;
+        this.archivio = archivio;
     }
 
     @Override
@@ -70,6 +72,7 @@ public class ClientManager implements Runnable{
         int scelta = 0;
         String pass = "";
         Utente utente;
+        HashMap<String, String> dati;
 
         while(scelta != 1 && scelta != 2) {
             to_client.print("\n-----REGISTRAZIONE-----");
@@ -97,30 +100,30 @@ public class ClientManager implements Runnable{
                     to_client.print("\nPassword errata, ritenta");
                 }else break;
             }
-            utente = registrazioneUtente(client, from_client, to_client);
-            to_client.print(utente);
-            to_client.print("\nUtente registrato!\n\n");
+            dati = registrazioneUtente(client, from_client, to_client);
+            Direttore direttore = new Direttore(dati.get("username"), dati.get("password"), dati.get("nome"), dati.get("cognome"));
+            archivio.addUtente(direttore);
+            to_client.print("\nDirettore registrato!\n\n");
         }
 
         if (scelta == 2) {
             while(true) {
-                to_client.print("\n Digita password per registrazione: " + end);
+                to_client.print("\nDigita password per registrazione: " + end);
                 to_client.flush();
                 pass = from_client.next();
                 if(pass.equals("passdoc") == false) {
                     to_client.print("\nPassword errata, ritenta");
                 }else break;
             }
-            utente = registrazioneUtente(client, from_client, to_client);
-            to_client.print(utente);
-            to_client.print("\nUtente registrato!\n\n");
+            dati = registrazioneUtente(client, from_client, to_client);
+            Docente docente = new Docente(dati.get("username"), dati.get("password"), dati.get("nome"), dati.get("cognome"));
+            archivio.addUtente(docente);
+            to_client.print("\nDocente registrato!\n\n");
         }
-
-
-
     }
 
-    private Utente registrazioneUtente(Socket client, Scanner from_client, PrintWriter to_client){
+    private HashMap<String, String> registrazioneUtente(Socket client, Scanner from_client, PrintWriter to_client){
+        HashMap<String, String> dati = new HashMap<>();
         String username;
         String nome;
         String cognome;
@@ -129,19 +132,18 @@ public class ClientManager implements Runnable{
         to_client.print("\n-----------------------");
         to_client.print("\nInserisci username: "+end);
         to_client.flush();
-        username = from_client.next();
+        dati.put("username", from_client.next());
         to_client.print("\nInserisci password: "+end);
         to_client.flush();
-        pass = from_client.next();
+        dati.put("password", from_client.next());
         to_client.print("\nInserisci Nome: "+end);
         to_client.flush();
-        nome = from_client.next();
+        dati.put("nome", from_client.next());
         to_client.print("\nInserisci Cognome: "+end);
         to_client.flush();
-        cognome = from_client.next();
+        dati.put("cognome", from_client.next());
 
-        Utente utente = new Utente(username, pass, nome, cognome);
-        return utente;
+        return dati;
     }
 
     private int login(Socket client, Scanner from_client, PrintWriter to_client){

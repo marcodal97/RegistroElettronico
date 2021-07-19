@@ -16,6 +16,20 @@ public class Server {
     public void start(){
 
         int n_connection = 0;
+        Archivio archivio;
+
+        try {
+            FileInputStream f = new FileInputStream("archivio.ser");
+            ObjectInputStream os = new ObjectInputStream(f);
+             archivio = (Archivio) (os.readObject());
+        } catch (IOException e) {
+             archivio = new Archivio();
+            System.out.println("Creazione nuovo archivio");
+        } catch (ClassNotFoundException e) {
+             archivio = new Archivio();
+            System.out.println("Creazione nuovo archivio");
+        }
+
 
         try {
             server_socket = new ServerSocket(port);
@@ -25,7 +39,7 @@ public class Server {
                 n_connection++;
                 System.out.println("Connessione accettata dal client: " + client_socket.getRemoteSocketAddress());
 
-                ClientManager cm = new ClientManager(client_socket);
+                ClientManager cm = new ClientManager(client_socket, archivio);
                 Thread t = new Thread(cm);
                 t.start();
             }
@@ -38,7 +52,6 @@ public class Server {
     public void exit(){
         try {
             server_socket.close();
-            System.out.println("salve");
             System.exit(0);
         } catch (IOException e) {
             e.printStackTrace();
