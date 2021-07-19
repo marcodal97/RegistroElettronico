@@ -21,13 +21,15 @@ public class Server {
         try {
             FileInputStream f = new FileInputStream("archivio.ser");
             ObjectInputStream os = new ObjectInputStream(f);
-             archivio = (Archivio) (os.readObject());
+            archivio = (Archivio) (os.readObject());
+            os.close();
         } catch (IOException e) {
-             archivio = new Archivio();
-            System.out.println("Creazione nuovo archivio");
+            archivio = new Archivio();
+            e.printStackTrace();
+            System.out.println("1Creazione nuovo archivio");
         } catch (ClassNotFoundException e) {
-             archivio = new Archivio();
-            System.out.println("Creazione nuovo archivio");
+            archivio = new Archivio();
+            System.out.println("2Creazione nuovo archivio");
         }
 
 

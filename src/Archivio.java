@@ -1,7 +1,12 @@
 import java.io.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 
 public class Archivio implements Serializable {
+    private static final long serialVersionUID = -4140436349008090061L;
     private LinkedList<Utente> listaUtenti;
 
     public Archivio() {
@@ -21,12 +26,30 @@ public class Archivio implements Serializable {
         return utente;
     }
 
+    public Utente loginCheck(String username, String password){
+        Utente utente =  null;
+
+        for(Utente u : listaUtenti){
+            if(u.getUsername().equals((username)) && u.getPassword().equals(password)) return u;
+        }
+        return utente;
+    }
+
     public void addUtente(Utente utente){
         listaUtenti.add(utente);
         onFile();
-        System.out.println(this.toString());
     }
 
+    public void addCorso(Docente docente, String nome){
+        docente.addCorso(nome);
+        onFile();
+    }
+
+    public void addLezione(Docente docente, Corso corso, Date data, int ore, String argomento){
+        corso.addLezione(data, ore, argomento);
+        docente.addNumLezioni();
+        onFile();
+    }
 
     public void onFile(){
         try {
