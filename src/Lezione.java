@@ -1,7 +1,7 @@
 import java.io.Serializable;
 import java.util.Date;
 
-public class Lezione implements Serializable {
+public class Lezione implements Serializable, Comparable<Lezione>{
     private static final long serialVersionUID = 5134225067835947374L;
     private  int idLezione;
     private Date data;
@@ -33,11 +33,19 @@ public class Lezione implements Serializable {
 
     @Override
     public String toString() {
+
         return "Lezione{" +
                 "idLezione=" + idLezione +
-                ", data=" + data +
+                ", data=" + String.format("%td %tb %tY", data,data, data)+
                 ", ore=" + ore +
                 ", argomento='" + argomento + '\'' +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Lezione lezione) {
+        if(lezione.getData().before(this.data)) return -1;
+        if(lezione.getData().after(this.data)) return 1;
+        return 0;
     }
 }

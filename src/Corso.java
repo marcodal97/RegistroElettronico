@@ -62,6 +62,25 @@ public class Corso implements Serializable {
         this.totLezioni = this.totLezioni + 1;
     }
 
+    public boolean checkId(int id){
+        for(Lezione l : listaLezioni){
+            if(l.getIdLezione() == id) return true;
+        }
+        return false;
+    }
+
+    public void delLezione(int id){
+        for(Lezione l : listaLezioni){
+            if(l.getIdLezione()==id){
+                totOre = totOre - l.getOre();
+                totLezioni = totLezioni - 1;
+                listaLezioni.remove(l);
+                return;
+            }
+        }
+
+    }
+
     @Override
     public String toString() {
         return "Corso{" +

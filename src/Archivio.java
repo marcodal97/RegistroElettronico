@@ -51,6 +51,13 @@ public class Archivio implements Serializable {
         onFile();
     }
 
+    public void delLezione(Docente docente, Corso corso, int id){
+        corso.delLezione(id);
+        docente.remNumLezioni();
+        onFile();
+
+    }
+
     public void onFile(){
         try {
             FileOutputStream f = new FileOutputStream("archivio.ser");

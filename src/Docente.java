@@ -46,6 +46,10 @@ public class Docente extends Utente implements Serializable {
         totLezioni = totLezioni+1;
     }
 
+    public void remNumLezioni(){
+        totLezioni = totLezioni - 1;
+    }
+
     @Override
     public String toString() {
         return "Docente{" +
