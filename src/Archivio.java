@@ -55,7 +55,11 @@ public class Archivio implements Serializable {
         corso.delLezione(id);
         docente.remNumLezioni();
         onFile();
+    }
 
+    public void delCorso(Docente docente, int id){
+        docente.delCorso(id);
+        onFile();
     }
 
     public void onFile(){

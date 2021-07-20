@@ -49,6 +49,24 @@ public class Docente extends Utente implements Serializable {
     public void remNumLezioni(){
         totLezioni = totLezioni - 1;
     }
+    public boolean checkIdCorso(int id){
+        for(Corso c : listaCorsi){
+            if(c.getIdCorso() == id) return true;
+        }
+        return false;
+    }
+
+    public void delCorso(int id) {
+
+        for (Corso c : listaCorsi) {
+            if (c.getIdCorso() == id) {
+                totCorsi = totCorsi-1;
+                totLezioni = totLezioni - c.getTotLezioni();
+                listaCorsi.remove(c);
+                return;
+            }
+        }
+    }
 
     @Override
     public String toString() {
@@ -59,4 +77,6 @@ public class Docente extends Utente implements Serializable {
                 ", totLezioni=" + totLezioni +
                 '}';
     }
+
+
 }

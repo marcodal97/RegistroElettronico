@@ -238,7 +238,8 @@ public class ClientManager implements Runnable{
             to_client.print("\nMENU CORSI");
             to_client.print("\n\n1)Lista Corsi");
             to_client.print("\n2)Aggiungi Corso");
-            to_client.print("\n3)Indietro\n" + end);
+            to_client.print("\n3)Elimina Corso");
+            to_client.print("\n4)Indietro\n" + end);
             to_client.flush();
 
             while (true) {
@@ -263,7 +264,37 @@ public class ClientManager implements Runnable{
                     to_client.println("\nCorso Inserito!");
                     break;
 
+
                 case 3:
+                    int id;
+                    to_client.print("\n\nID | NOME");
+                    for(Corso c : ((Docente)utente).getListaCorsi()){
+                        to_client.print("\n"+c.getIdCorso()+" - "+c.getNomeCorso());
+                    }
+                    to_client.print("\n\nInserisci l'ID del corso da eliminare (digita 0 per tornare indietro): "+end);
+                    to_client.flush();
+
+                    boolean num = false;
+                    while (true) {
+                        if (from_client.hasNextInt() == true) {
+                            id = from_client.nextInt();
+                            num = true;
+                            if(((Docente)utente).checkIdCorso(id) || id == 0){
+                                break;
+                            }
+                        }
+                        if(num == false)
+                            from_client.next();
+                        to_client.print("Inserisci un ID valido: " + end);
+                        to_client.flush();
+                    }
+                    if (id == 0) break;
+                    archivio.delCorso((Docente)utente, id);
+                    to_client.print("\nCorso Eliminato!");
+                    to_client.flush();
+                    break;
+
+                case 4:
                     run = false;
                     break;
 
