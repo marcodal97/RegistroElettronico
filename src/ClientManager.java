@@ -18,10 +18,13 @@ public class ClientManager implements Runnable{
 
     @Override
     public void run(){
+
+    Scanner from_client = null;
+    PrintWriter to_client = null;
+
         while(running){
             try {
-                Scanner from_client = null;
-                PrintWriter to_client = null;
+
                 int message_from_client;
                 Utente utente = null;
 
@@ -65,7 +68,10 @@ public class ClientManager implements Runnable{
                     }
                 }
             }catch (Exception ex){
+                ex.printStackTrace();
                 running = false;
+                to_client.print("Chiusura Connessione..."+end);
+                to_client.flush();
             }
         }
         System.out.println("Connessione chiusa col Client: "+assigned_client.getRemoteSocketAddress());

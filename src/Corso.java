@@ -1,8 +1,5 @@
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.*;
 
 public class Corso implements Serializable {
 
@@ -43,9 +40,13 @@ public class Corso implements Serializable {
 
     public void addLezione(Date data, int ore, String argomento){
         int id;
-        Lezione lez = listaLezioni.getFirst();
-        if(lez == null) id = 0;
-        else id = lez.getIdLezione()+1;
+
+        try{
+            Lezione lez = listaLezioni.getLast();
+            id = lez.getIdLezione()+1;
+        }catch(NoSuchElementException ex){
+            id = 1;
+        }
 
         Lezione l = new Lezione(id, data, ore, argomento);
         listaLezioni.add(l);

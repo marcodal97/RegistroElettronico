@@ -1,5 +1,6 @@
 import java.io.Serializable;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 
 public class Docente extends Utente implements Serializable {
 
@@ -29,9 +30,13 @@ public class Docente extends Utente implements Serializable {
 
     public void addCorso(String nome){
         int id;
-        Corso c = listaCorsi.getFirst();
-        if(c == null) id = 0;
-        else id = c.getIdCorso()+1;
+
+        try{
+            Corso c = listaCorsi.getLast();
+            id = c.getIdCorso()+1;
+        }catch(NoSuchElementException ex){
+            id = 1;
+        }
         Corso corso = new Corso(id, nome);
         totCorsi = totCorsi+1;
         listaCorsi.add(corso);

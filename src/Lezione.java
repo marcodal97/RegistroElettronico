@@ -2,6 +2,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Lezione implements Serializable {
+    private static final long serialVersionUID = 5134225067835947374L;
     private  int idLezione;
     private Date data;
     private int ore;
@@ -28,5 +29,15 @@ public class Lezione implements Serializable {
 
     public String getArgomento() {
         return argomento;
+    }
+
+    @Override
+    public String toString() {
+        return "Lezione{" +
+                "idLezione=" + idLezione +
+                ", data=" + data +
+                ", ore=" + ore +
+                ", argomento='" + argomento + '\'' +
+                '}';
     }
 }
