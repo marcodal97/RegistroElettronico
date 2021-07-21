@@ -61,7 +61,6 @@ public class Archivio implements Serializable {
         docente.delCorso(id);
         onFile();
     }
-
     public void onFile(){
         try {
             FileOutputStream f = new FileOutputStream("archivio.ser");
@@ -73,6 +72,28 @@ public class Archivio implements Serializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean checkDoc(String username){
+         for(Utente u : listaUtenti){
+             if(u instanceof Docente)
+                 if(u.getUsername().equals(username)) return true;
+         }
+         return false;
+    }
+
+    public void delDocente(String username){
+        for(Utente u : listaUtenti){
+            if(u.getUsername().equals(username)) listaUtenti.remove(u);
+        }
+        onFile();
+    }
+
+    public Docente getDocente(String username){
+        for(Utente u : listaUtenti){
+            if(u.getUsername().equals(username)) return (Docente)u;
+        }
+        return null;
     }
 
     @Override

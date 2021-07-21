@@ -49,7 +49,22 @@ public class Docente extends Utente implements Serializable {
     public void remNumLezioni(){
         totLezioni = totLezioni - 1;
     }
+
     public boolean checkIdCorso(int id){
+        for(Corso c : listaCorsi){
+            if(c.getIdCorso() == id) return true;
+        }
+        return false;
+    }
+
+    public Corso getCorso(int id){
+        for(Corso c : listaCorsi){
+            if(c.getIdCorso()==id) return c;
+        }
+        return null;
+    }
+
+    public boolean checkCorso(int id){
         for(Corso c : listaCorsi){
             if(c.getIdCorso() == id) return true;
         }

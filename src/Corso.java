@@ -81,6 +81,12 @@ public class Corso implements Serializable {
 
     }
 
+    public LinkedList<Lezione> ordinaLezioni(){
+        LinkedList<Lezione> lez = new LinkedList<>(listaLezioni);
+        Collections.sort(lez);
+        return lez;
+    }
+
     @Override
     public String toString() {
         return "Corso{" +

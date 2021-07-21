@@ -53,12 +53,12 @@ public class ClientManager implements Runnable{
                     }
 
                     if (message_from_client == 1) {
-                        utente = login(assigned_client, from_client, to_client, archivio);
-                        if (utente instanceof  Direttore) direttore(assigned_client, from_client, to_client, archivio, utente);
-                        if (utente instanceof Docente) docente(assigned_client, from_client, to_client, archivio, utente);
+                        utente = login(from_client, to_client, archivio);
+                        if (utente instanceof  Direttore) direttore(from_client, to_client, archivio, (Direttore)utente);
+                        if (utente instanceof Docente) docente(from_client, to_client, archivio, (Docente)utente);
                     }
                     if (message_from_client == 2) {
-                        registrazione(assigned_client, from_client, to_client);
+                        registrazione(from_client, to_client);
                     }
                     if(message_from_client == 3){
                         running = false;
@@ -77,7 +77,7 @@ public class ClientManager implements Runnable{
         System.out.println("Connessione chiusa col Client: "+assigned_client.getRemoteSocketAddress());
     }
 
-    private void registrazione(Socket client, Scanner from_client, PrintWriter to_client){
+    private void registrazione(Scanner from_client, PrintWriter to_client){
         int scelta = 0;
         String pass = "";
         Utente utente;
@@ -109,7 +109,7 @@ public class ClientManager implements Runnable{
                     to_client.print("\nPassword errata, ritenta");
                 }else break;
             }
-            dati = registrazioneUtente(client, from_client, to_client, archivio);
+            dati = registrazioneUtente(from_client, to_client, archivio);
             Direttore direttore = new Direttore(dati.get("username"), dati.get("password"), dati.get("nome"), dati.get("cognome"));
             archivio.addUtente(direttore);
             to_client.print("\nDirettore registrato!\n\n");
@@ -124,19 +124,15 @@ public class ClientManager implements Runnable{
                     to_client.print("\nPassword errata, ritenta");
                 }else break;
             }
-            dati = registrazioneUtente(client, from_client, to_client, archivio);
+            dati = registrazioneUtente(from_client, to_client, archivio);
             Docente docente = new Docente(dati.get("username"), dati.get("password"), dati.get("nome"), dati.get("cognome"));
             archivio.addUtente(docente);
             to_client.print("\nDocente registrato!\n\n");
         }
     }
 
-    private HashMap<String, String> registrazioneUtente(Socket client, Scanner from_client, PrintWriter to_client, Archivio archivio){
+    private HashMap<String, String> registrazioneUtente(Scanner from_client, PrintWriter to_client, Archivio archivio){
         HashMap<String, String> dati = new HashMap<>();
-        String username;
-        String nome;
-        String cognome;
-        String pass;
 
         to_client.print("\n-----------------------");
         while(true) {
@@ -153,15 +149,16 @@ public class ClientManager implements Runnable{
         dati.put("password", from_client.next());
         to_client.print("\nInserisci Nome: "+end);
         to_client.flush();
-        dati.put("nome", from_client.next());
+        from_client.nextLine();
+        dati.put("nome", from_client.nextLine());
         to_client.print("\nInserisci Cognome: "+end);
         to_client.flush();
-        dati.put("cognome", from_client.next());
+        dati.put("cognome", from_client.nextLine());
 
         return dati;
     }
 
-    private Utente login(Socket client, Scanner from_client, PrintWriter to_client, Archivio archivio){
+    private Utente login(Scanner from_client, PrintWriter to_client, Archivio archivio){
         String username;
         String password;
         Utente utente = null;
@@ -176,26 +173,184 @@ public class ClientManager implements Runnable{
             utente = archivio.loginCheck(username, password);
 
             if (utente == null){
-                to_client.print("Errati\n");
+                to_client.print("\nDati Errati\n");
             }else break;
         }
         return utente;
     }
 
+//////////////////////////////////////////////// DIRETTORE ////////////////////////////////////////////////////////////
 
-    private void direttore(Socket client, Scanner from_client, PrintWriter to_client, Archivio archivio, Utente utente){
-        to_client.print("\nLogin Direttore: "+utente.getUsername()+end);
-        to_client.flush();
+    private void direttore(Scanner from_client, PrintWriter to_client, Archivio archivio, Direttore direttore){
+        int message_from_client;
+        boolean run = true;
+
+        System.out.println(archivio.toString());
+
+        to_client.print("\n\nLogin Direttore: "+direttore.getUsername());
+        while(run) {
+            to_client.print("\n\n------------------------");
+            to_client.print("\nMENU PRINCIPALE");
+            to_client.print("\n\n1)Menu Docenti");
+            to_client.print("\n2)Utility");
+            to_client.print("\n3)Logout\n" + end);
+            to_client.flush();
+
+            while (true) {
+                if (from_client.hasNextInt() == true) {
+                    message_from_client = from_client.nextInt();
+                    break;
+                }
+                from_client.next();
+                to_client.print("Inserisci un numero: " + end);
+                to_client.flush();
+            }
+            switch (message_from_client) {
+                case 1:
+                    menuDocDirettore(from_client, to_client, direttore);
+                    break;
+
+                case 2:
+                    utilityDirettore(from_client,to_client,direttore,archivio);
+                    break;
+        
+                case 3:
+                    run = false;
+                    break;
+            }
+        }
     }
 
-    private void docente(Socket client, Scanner from_client, PrintWriter to_client, Archivio archivio, Utente utente){
+    private void menuDocDirettore(Scanner from_client, PrintWriter to_client, Direttore direttore){
+        boolean run = true;
+        int message_from_client;
+        int num;
+        String user;
+
+        while(run) {
+            to_client.print("\n\n------------------------");
+            to_client.print("\nMenu Docenti");
+            to_client.print("\n\n1)Lista Docenti");
+            to_client.print("\n2)Elimina Docente");
+            to_client.print("\n3)Indietro\n" + end);
+            to_client.flush();
+
+            while (true) {
+                if (from_client.hasNextInt() == true) {
+                    message_from_client = from_client.nextInt();
+                    break;
+                }
+                from_client.next();
+                to_client.print("Inserisci un numero: " + end);
+                to_client.flush();
+            }
+            switch (message_from_client) {
+
+                case 1:
+                    LinkedList<Utente> lista = archivio.getListaUtenti();
+                    to_client.print("\n\n------------------------");
+                    to_client.print("\nLISTA DOCENTI\n");
+                    to_client.print("\nCOGNOME | NOME | USERNAME");
+                    to_client.flush();
+                    for(Utente u : lista){
+                        if(u instanceof  Docente)
+                            to_client.print("\n"+u.getCognome()+" - "+u.getNome()+" - "+u.getUsername());
+                        to_client.flush();
+                    }
+                    to_client.print("\n\nInserisci l'username del Docente (digita 0 per tornare indietro): "+end);
+                    to_client.flush();
+
+                    while (true) {
+                        user = from_client.next();
+                        try{
+                            num = Integer.parseInt(user);
+                        }catch(NumberFormatException ex){
+                            num = -1;
+                        }
+                        if(archivio.checkDoc(user) || num == 0){
+                            break;
+                        }
+                        to_client.print("Docente non trovato, riprova: " + end);
+                        to_client.flush();
+                    }
+
+                    if(num == 0) break;
+
+                    visualDocente(from_client, to_client, archivio, user);
+
+                    break;
+
+
+                case 2:
+                    to_client.print("\n\nNOME | COGNOME | USERNAME");
+                    for(Utente u : archivio.getListaUtenti()){
+                        if(u instanceof Docente)
+                            to_client.print("\n"+u.getNome()+" - "+u.getCognome()+" - "+u.getUsername());
+                    }
+                    to_client.print("\n\nInserisci l'username del Docente da eliminare (digita 0 per tornare indietro): "+end);
+                    to_client.flush();
+
+                    while (true) {
+                            user = from_client.next();
+                            try{
+                                num = Integer.parseInt(user);
+                            }catch(NumberFormatException ex){
+                                num = -1;
+                            }
+                            if(archivio.checkDoc(user) || num == 0){
+                                break;
+                            }
+                        to_client.print("Inserisci un username valido: " + end);
+                        to_client.flush();
+                    }
+                    if (num == 0) break;
+                    archivio.delDocente(user);
+                    to_client.print("\nDocente Eliminato!");
+                    to_client.flush();
+                    back(from_client,to_client);
+                    break;
+
+
+                case 3:
+                    run = false;
+                    break;
+
+            }
+        }
+    }
+
+    private void utilityDirettore(Scanner from_client, PrintWriter to_client, Direttore direttore, Archivio archivio){
+
+    }
+
+    private void visualDocente(Scanner from_client, PrintWriter to_client, Archivio archivio, String username){
+        Docente docente = archivio.getDocente(username);
+        to_client.print("\n***********************\n");
+        to_client.print("\nNOME: "+docente.getNome()+" - COGNOME: "+docente.getCognome()+" - N° CORSI: "+docente.getTotCorsi() + " - N° LEZIONI: "+docente.getTotLezioni());
+        int scelta;
+
+        while(true) {
+            scelta = sceltaCorso(from_client, to_client, archivio, docente);
+            if (scelta == 0) return;
+            Corso corso;
+            if (docente.checkCorso(scelta)) {
+                corso = docente.getCorso(scelta);
+                visualLezioniPerData(to_client, corso);
+                back(from_client,to_client);
+            }
+        }
+    }
+
+    /////////////////////////////////////////////  DOCENTE ////////////////////////////////////////////////////////////
+
+    private void docente(Scanner from_client, PrintWriter to_client, Archivio archivio, Docente docente){
 
         int message_from_client;
         boolean run = true;
 
         System.out.println(archivio.toString());
 
-        to_client.print("\n\nLoginDocente: "+utente.getUsername());
+        to_client.print("\n\nLoginDocente: "+docente.getUsername());
         while(run) {
             to_client.print("\n\n------------------------");
             to_client.print("\nMENU PRINCIPALE");
@@ -215,11 +370,11 @@ public class ClientManager implements Runnable{
             }
             switch (message_from_client) {
                 case 1:
-                    menucorsi(client, from_client, to_client, archivio, utente);
+                    menuCorsi(from_client, to_client, archivio, docente);
                     break;
 
                 case 2:
-                    avvisi(client, from_client, to_client, archivio, utente);
+                    avvisi(from_client, to_client, archivio, docente);
                     break;
 
                 case 3:
@@ -229,7 +384,7 @@ public class ClientManager implements Runnable{
         }
     }
 
-    private void menucorsi(Socket client, Scanner from_client, PrintWriter to_client, Archivio archivio, Utente utente){
+    private void menuCorsi(Scanner from_client, PrintWriter to_client, Archivio archivio, Docente docente){
         boolean run = true;
         int message_from_client;
 
@@ -253,22 +408,24 @@ public class ClientManager implements Runnable{
             }
             switch (message_from_client) {
                 case 1:
-                    utilityCorsi(client, from_client, to_client, archivio, utente);
+                    utilityCorsi(from_client, to_client, archivio, docente);
                     break;
 
                 case 2:
                     to_client.print("\nNome Corso: " + end);
                     to_client.flush();
-                    String nomeCorso = from_client.next();
-                    archivio.addCorso((Docente)utente, nomeCorso);
+                    from_client.nextLine();
+                    String nomeCorso = from_client.nextLine();
+                    archivio.addCorso(docente, nomeCorso);
                     to_client.println("\nCorso Inserito!");
+                    back(from_client,to_client);
                     break;
 
 
                 case 3:
                     int id;
                     to_client.print("\n\nID | NOME");
-                    for(Corso c : ((Docente)utente).getListaCorsi()){
+                    for(Corso c : docente.getListaCorsi()){
                         to_client.print("\n"+c.getIdCorso()+" - "+c.getNomeCorso());
                     }
                     to_client.print("\n\nInserisci l'ID del corso da eliminare (digita 0 per tornare indietro): "+end);
@@ -279,7 +436,7 @@ public class ClientManager implements Runnable{
                         if (from_client.hasNextInt() == true) {
                             id = from_client.nextInt();
                             num = true;
-                            if(((Docente)utente).checkIdCorso(id) || id == 0){
+                            if(docente.checkIdCorso(id) || id == 0){
                                 break;
                             }
                         }
@@ -289,9 +446,10 @@ public class ClientManager implements Runnable{
                         to_client.flush();
                     }
                     if (id == 0) break;
-                    archivio.delCorso((Docente)utente, id);
+                    archivio.delCorso(docente, id);
                     to_client.print("\nCorso Eliminato!");
                     to_client.flush();
+                    back(from_client,to_client);
                     break;
 
                 case 4:
@@ -302,45 +460,23 @@ public class ClientManager implements Runnable{
         }
     }
 
-    private void utilityCorsi(Socket client, Scanner from_client, PrintWriter to_client, Archivio archivio, Utente utente){
-        Docente docente = (Docente)utente;
-        LinkedList<Corso> lista = docente.getListaCorsi();
+    private void utilityCorsi(Scanner from_client, PrintWriter to_client, Archivio archivio, Docente docente){
+
         int scelta;
 
         while(true) {
-            to_client.print("\n\n------------------------");
-            to_client.print("\nLISTA CORSI\n");
-            for (Corso c : lista) {
-                to_client.print("\n" + c.getIdCorso() + ")" + c.getNomeCorso());
-            }
-
-            while (true) {
-                to_client.print("\n\nScegli il corso (digita 0 per tornare indietro): " + end);
-                to_client.flush();
-                if (from_client.hasNextInt() == true) {
-                    scelta = from_client.nextInt();
-                    break;
-                }
-            }
+            scelta = sceltaCorso(from_client, to_client, archivio, docente);
             if (scelta == 0) return;
 
-        Corso corso;
-
-            if((corso = containCorso(lista, scelta)) != null){
-                utilityLezioni(client, from_client, to_client, archivio, utente, corso);
+            Corso corso;
+            if (docente.checkCorso(scelta)) {
+                corso = docente.getCorso(scelta);
+                utilityLezioni(from_client, to_client, archivio, docente, corso);
             }
         }
     }
 
-    private Corso containCorso(LinkedList<Corso> lista, int id){
-        Corso corso = null;
-        for(Corso c : lista){
-            if(c.getIdCorso()==id) return c;
-        }
-        return corso;
-    }
-
-    private void utilityLezioni(Socket client, Scanner from_client, PrintWriter to_client, Archivio archivio, Utente utente, Corso corso){
+    private void utilityLezioni(Scanner from_client, PrintWriter to_client, Archivio archivio, Docente docente, Corso corso){
 
         int scelta;
         boolean run = true;
@@ -366,13 +502,8 @@ public class ClientManager implements Runnable{
 
             switch (scelta){
                 case 1:
-                    LinkedList<Lezione> lezOrd = ordinaLezioni(corso.getListaLezioni());
-                    to_client.print("\n\n|    DATA    | ORE | ARGOMENTO");
-                    for(Lezione l : lezOrd){
-                        to_client.print(String.format("\n %td %tb %tY", l.getData(),l.getData(), l.getData()) +" -  "+l.getOre()+"  -  "+l.getArgomento());
-                    }
-                    to_client.print("\n");
-                    to_client.flush();
+                    visualLezioniPerData(to_client, corso);
+                    back(from_client,to_client);
                     break;
 
                 case 2:
@@ -388,7 +519,7 @@ public class ClientManager implements Runnable{
                             date = df.parse(data);
                             break;
                         } catch (ParseException e) {
-                            to_client.print("\nInserire data valida \"dd/mm/yyyy\"");
+                            to_client.print("\nInserire data valida \"dd/mm/yyyy\"\n");
                         }
                     }
 
@@ -402,12 +533,12 @@ public class ClientManager implements Runnable{
                         to_client.print("Inserisci un numero: ");
                         from_client.next();
                     }
-
+                    from_client.nextLine(); //non mettendolo, il prossimo nextLine() mi legge \n del next() precedente
                     to_client.print("Argomento: "+end);
                     to_client.flush();
-                    String argomento = from_client.next();
+                    String argomento = from_client.nextLine();
 
-                    archivio.addLezione((Docente)utente, corso, date, ore, argomento);
+                    archivio.addLezione(docente, corso, date, ore, argomento);
 
                     to_client.print("\nLezione Inserita!");
 
@@ -438,9 +569,10 @@ public class ClientManager implements Runnable{
                         to_client.flush();
                     }
                     if (id == 0) break;
-                    archivio.delLezione((Docente)utente, corso, id);
+                    archivio.delLezione(docente, corso, id);
                     to_client.print("\nLezione Eliminata!");
                     to_client.flush();
+                    back(from_client,to_client);
                     break;
 
 
@@ -451,17 +583,67 @@ public class ClientManager implements Runnable{
         }
     }
 
-    private LinkedList<Lezione> ordinaLezioni(LinkedList<Lezione> l){
-        LinkedList<Lezione> lez = new LinkedList<>(l);
-        Collections.sort(lez);
-        return lez;
-
-    }
-
-    private void avvisi(Socket client, Scanner from_client, PrintWriter to_client, Archivio archivio, Utente utente){
+    private void avvisi(Scanner from_client, PrintWriter to_client, Archivio archivio, Docente docente){
         to_client.print("\nAvvisi"+end);
         to_client.flush();
         return;
     }
 
+////////////////////////////////////
+
+
+    private int sceltaCorso(Scanner from_client, PrintWriter to_client, Archivio archivio, Docente docente){
+
+        LinkedList<Corso> lista = docente.getListaCorsi();
+
+        int scelta;
+
+                to_client.print("\n\n------------------------");
+                to_client.print("\nLISTA CORSI\n");
+                to_client.print("\nID | NOME | N°LEZIONI");
+                for(Corso c:lista){
+                    to_client.print("\n"+c.getIdCorso()+" - "+c.getNomeCorso()+ " - " +c.getTotLezioni());
+                }
+
+                while(true){
+                    to_client.print("\n\nScegli il corso (digita 0 per tornare indietro): "+end);
+                    to_client.flush();
+                    if(from_client.hasNextInt()==true){
+                        scelta=from_client.nextInt();
+                        break;
+                    }
+                }
+            return scelta;
+    }
+
+    private void visualLezioniPerData(PrintWriter to_client, Corso corso){
+        to_client.print("\n------------------------");
+        to_client.print("\nCORSO: "+corso.getNomeCorso()+ " - Tot ore: " + corso.getTotOre());
+        LinkedList<Lezione> lezOrd = corso.ordinaLezioni();
+        to_client.print("\n\n|    DATA    | ORE | ARGOMENTO");
+        for(Lezione l : lezOrd){
+            to_client.print(String.format("\n %td %tb %tY", l.getData(),l.getData(), l.getData()) +" -  "+l.getOre()+"  -  "+l.getArgomento());
+        }
+        to_client.print("\n");
+        to_client.flush();
+    }
+
+    private void back(Scanner from_client, PrintWriter to_client){
+        int message_from_client;
+        boolean num = false;
+            while (true) {
+                to_client.print("\ndigita 0 per tornare indietro: "+end);
+                to_client.flush();
+                if (from_client.hasNextInt() == true) {
+                    message_from_client = from_client.nextInt();
+                    num = true;
+                    if(message_from_client == 0)
+                       return;
+                }
+                if(num == false)
+                    from_client.next();
+            }
+    }
+
 }
+
