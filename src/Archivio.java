@@ -2,6 +2,7 @@ import java.io.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 
@@ -94,6 +95,12 @@ public class Archivio implements Serializable {
             if(u.getUsername().equals(username)) return (Docente)u;
         }
         return null;
+    }
+
+    public LinkedList<Utente> ordinaUtenti(){
+        LinkedList<Utente> listaord = new LinkedList<>(listaUtenti);
+        Collections.sort(listaord);
+        return listaord;
     }
 
     @Override

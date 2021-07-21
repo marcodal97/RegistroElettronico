@@ -68,7 +68,7 @@ public class ClientManager implements Runnable{
                     }
                 }
             }catch (Exception ex){
-                ex.printStackTrace();
+                //ex.printStackTrace();
                 running = false;
                 to_client.print("Chiusura Connessione..."+end);
                 to_client.flush();
@@ -247,7 +247,7 @@ public class ClientManager implements Runnable{
             switch (message_from_client) {
 
                 case 1:
-                    LinkedList<Utente> lista = archivio.getListaUtenti();
+                    LinkedList<Utente> lista = archivio.ordinaUtenti();
                     to_client.print("\n\n------------------------");
                     to_client.print("\nLISTA DOCENTI\n");
                     to_client.print("\nCOGNOME | NOME | USERNAME");
