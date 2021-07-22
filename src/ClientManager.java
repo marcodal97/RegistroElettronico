@@ -68,7 +68,7 @@ public class ClientManager implements Runnable{
                     }
                 }
             }catch (Exception ex){
-                //ex.printStackTrace();
+                ex.printStackTrace();
                 running = false;
                 to_client.print("Chiusura Connessione..."+end);
                 to_client.flush();
@@ -320,7 +320,143 @@ public class ClientManager implements Runnable{
     }
 
     private void utilityDirettore(Scanner from_client, PrintWriter to_client, Direttore direttore, Archivio archivio){
+        boolean run = true;
+        int message_from_client;
+        Date date1 = null;
+        Date date2;
 
+        while(run) {
+            to_client.print("\n\n------------------------");
+            to_client.print("\nUTILITY");
+            to_client.print("\n\n1)Genera Compensi");
+            to_client.print("\n2)Cerca lezioni per data");
+            to_client.print("\n3)Indietro\n" + end);
+            to_client.flush();
+
+            while (true) {
+                if (from_client.hasNextInt() == true) {
+                    message_from_client = from_client.nextInt();
+                    break;
+                }
+                from_client.next();
+                to_client.print("Inserisci un numero: " + end);
+                to_client.flush();
+            }
+            switch (message_from_client) {
+
+                case 1:
+                    to_client.print("\n\n------------------------");
+                    to_client.print("\nCOMPENSI");
+                    to_client.print("\nInserisci la paga oraria (digita 0 per tornare indietro): "+end);
+                    to_client.flush();
+
+                    while (true) {
+                        if (from_client.hasNextInt() == true) {
+                            message_from_client = from_client.nextInt();
+                            break;
+                        }
+                        from_client.next();
+                        to_client.print("Inserisci un numero: " + end);
+                        to_client.flush();
+                    }
+                    if(message_from_client == 0) break;
+                    int ore = 0;
+
+
+                    while(true) {
+                        to_client.print("Inserisci Data inizio: " + end);
+                        to_client.flush();
+                        String data = from_client.next();
+                        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+                        try {
+                            date1 = df.parse(data);
+                            break;
+                        } catch (ParseException e) {
+                            to_client.print("\nInserire data valida \"gg/mm/aaaa\"\n");
+                        }
+                    }
+
+                    while(true) {
+                        to_client.print("Inserisci Data fine: " + end);
+                        to_client.flush();
+                        String data = from_client.next();
+                        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+                        try {
+                            date2 = df.parse(data);
+                            break;
+                        } catch (ParseException e) {
+                            to_client.print("\nInserire data valida \"gg/mm/aaaa\"\n");
+                        }
+                    }
+
+
+
+                    LinkedList<Utente> lista = archivio.ordinaUtenti();
+                    to_client.print("\n\nCOGNOME | NOME | COMPENSO");
+                    for(Utente u : lista){
+                        if(u instanceof Docente) {
+                            for (Corso c : ((Docente) u).getListaCorsi())
+                                for(Lezione l : c.getListaLezioni())
+                                    if(l.getData().before(date2)&& l.getData().after(date1)){
+                                        ore = ore + l.getOre();
+                                    }
+                            to_client.print("\n"+u.getCognome()+" - "+u.getNome()+" - €"+ore*message_from_client);
+                            to_client.flush();
+                            ore = 0;
+                        }
+                    }
+                    back(from_client, to_client);
+                    break;
+
+                case 2:
+                    boolean back = false;
+
+                    while(true) {
+                        to_client.print("Inserisci Data (digita 0 per tornare indietro): " + end);
+                        to_client.flush();
+                        String data = from_client.next();
+                        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+                        try {
+                            date1 = df.parse(data);
+                            break;
+                        } catch (ParseException e) {
+                            try{
+                                int num = Integer.parseInt(data);
+                                if(num == 0)
+                                    back = true;
+                            }catch(NumberFormatException ex) { }
+                            if(back == true)
+                                break;
+                            to_client.print("\nInserire data valida \"gg/mm/aaaa\"\n");
+                        }
+                    }
+
+                    if(back == true)
+                        break;
+
+                    LinkedList<Utente> list = archivio.getListaUtenti();
+                    to_client.print("\n\n------------------------");
+                    to_client.print("\nLEZIONI IN DATA: " +String.format("%td %tb %tY",date1, date1, date1));
+                    to_client.print("\n\nCOGNOME | NOME | CORSO | ORE | ARGOMENTO");
+                    for(Utente u : list)
+                        if(u instanceof Docente)
+                            for(Corso c : ((Docente)u).getListaCorsi())
+                                for(Lezione l : c.getListaLezioni())
+                                    if(l.getData().equals(date1)){
+                                        to_client.print("\n"+u.getCognome()+" - "+u.getNome()+" - "+c.getNomeCorso()+" - "+l.getOre()+" - "+l.getArgomento());
+                                        to_client.flush();
+                                    }
+
+                    back(from_client, to_client);
+
+                    break;
+
+                case 3:
+                    run = false;
+                    break;
+
+            }
+        }
     }
 
     private void visualDocente(Scanner from_client, PrintWriter to_client, Archivio archivio, String username){
@@ -519,7 +655,7 @@ public class ClientManager implements Runnable{
                             date = df.parse(data);
                             break;
                         } catch (ParseException e) {
-                            to_client.print("\nInserire data valida \"dd/mm/yyyy\"\n");
+                            to_client.print("\nInserire data valida \"gg/mm/aaaa\"\n");
                         }
                     }
 
@@ -530,7 +666,7 @@ public class ClientManager implements Runnable{
                             ore = from_client.nextInt();
                             break;
                         }
-                        to_client.print("Inserisci un numero: ");
+                        to_client.print("Inserisci un numero!\n");
                         from_client.next();
                     }
                     from_client.nextLine(); //non mettendolo, il prossimo nextLine() mi legge \n del next() precedente
@@ -541,6 +677,7 @@ public class ClientManager implements Runnable{
                     archivio.addLezione(docente, corso, date, ore, argomento);
 
                     to_client.print("\nLezione Inserita!");
+                    back(from_client,to_client);
 
                    break;
 
@@ -589,7 +726,7 @@ public class ClientManager implements Runnable{
         return;
     }
 
-////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
     private int sceltaCorso(Scanner from_client, PrintWriter to_client, Archivio archivio, Docente docente){
@@ -606,12 +743,13 @@ public class ClientManager implements Runnable{
                 }
 
                 while(true){
-                    to_client.print("\n\nScegli il corso (digita 0 per tornare indietro): "+end);
+                    to_client.print("\n\nScegli ID corso (digita 0 per tornare indietro): "+end);
                     to_client.flush();
                     if(from_client.hasNextInt()==true){
                         scelta=from_client.nextInt();
                         break;
                     }
+                    from_client.next();
                 }
             return scelta;
     }
@@ -632,7 +770,7 @@ public class ClientManager implements Runnable{
         int message_from_client;
         boolean num = false;
             while (true) {
-                to_client.print("\ndigita 0 per tornare indietro: "+end);
+                to_client.print("\n\ndigita 0 per tornare indietro: "+end);
                 to_client.flush();
                 if (from_client.hasNextInt() == true) {
                     message_from_client = from_client.nextInt();

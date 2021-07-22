@@ -6,7 +6,7 @@ public class Direttore extends Utente{
 
     @Override
     public String toString() {
-        return "Direttore{" +
+        return "\n\nDirettore{" +
                 super.toString()+
                 "}";
     }

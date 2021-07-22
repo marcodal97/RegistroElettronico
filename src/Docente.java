@@ -85,7 +85,7 @@ public class Docente extends Utente implements Serializable {
 
     @Override
     public String toString() {
-        return "Docente{" +
+        return "\n\nDocente{" +
                 super.toString()+
                 "listaCorsi=" + listaCorsi +
                 ", totCorsi=" + totCorsi +
