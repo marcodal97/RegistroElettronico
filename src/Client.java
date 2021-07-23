@@ -7,6 +7,7 @@ public class Client {
     String address_ip;
     int port;
     Socket client_socket;
+    final char end = '§';
 
 
     public Client(String ip, int port) {
@@ -30,7 +31,7 @@ public class Client {
             while (true) {
                 while ((value = br.read()) != -1) {
                     char c = (char) value;
-                    if (c == '§') break;
+                    if (c == end) break;
                     sb.append(c);
                 }
                 message_from_server = sb.toString();
@@ -39,7 +40,12 @@ public class Client {
                 sb.setLength(0);
                 System.out.print(message_from_server);
 
-                while ((message_to_server = from_user.nextLine()).equals("")) ; //Per non far bloccare il programma quando si preme "invio"
+                //while ((message_to_server = from_user.nextLine()).equals("")) ; //Per non far bloccare il programma quando si preme "invio"
+                while(true){
+                    message_to_server = from_user.nextLine();
+                    if(message_to_server.equals("") || message_to_server.contains(Character.toString(end))){ }
+                    else break;
+                }
 
                 to_server.println(message_to_server);
                 //to_server.flush();
