@@ -72,7 +72,6 @@ public class Docente extends Utente implements Serializable {
     }
 
     public void delCorso(int id) {
-
         for (Corso c : listaCorsi) {
             if (c.getIdCorso() == id) {
                 totCorsi = totCorsi-1;

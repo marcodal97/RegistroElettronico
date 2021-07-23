@@ -21,12 +21,12 @@ public class ClientManager implements Runnable{
 
     Scanner from_client = null;
     PrintWriter to_client = null;
+    Utente utente = null;
 
         while(running){
             try {
 
                 int message_from_client;
-                Utente utente = null;
 
                 try {
                     from_client = new Scanner(assigned_client.getInputStream());
@@ -70,6 +70,8 @@ public class ClientManager implements Runnable{
             }catch (Exception ex){
                 ex.printStackTrace();
                 running = false;
+                if(utente != null)
+                    logout(utente.getUsername());
                 to_client.print("Chiusura Connessione..."+end);
                 to_client.flush();
             }
@@ -173,7 +175,7 @@ public class ClientManager implements Runnable{
             utente = archivio.loginCheck(username, password);
 
             if (utente == null){
-                to_client.print("\nDati Errati\n");
+                to_client.print("\nDati Errati o Login già effettuato\n");
             }else break;
         }
         return utente;
@@ -216,6 +218,7 @@ public class ClientManager implements Runnable{
         
                 case 3:
                     run = false;
+                    logout(direttore.getUsername());
                     break;
             }
         }
@@ -330,7 +333,8 @@ public class ClientManager implements Runnable{
             to_client.print("\nUTILITY");
             to_client.print("\n\n1)Genera Compensi");
             to_client.print("\n2)Cerca lezioni per data");
-            to_client.print("\n3)Indietro\n" + end);
+            to_client.print("\n3)Avvisi");
+            to_client.print("\n4)Indietro\n" + end);
             to_client.flush();
 
             while (true) {
@@ -448,13 +452,15 @@ public class ClientManager implements Runnable{
                                     }
 
                     back(from_client, to_client);
-
                     break;
 
                 case 3:
-                    run = false;
+                    menuAvvisi(from_client, to_client, archivio, direttore);
                     break;
 
+                case 4:
+                    run = false;
+                    break;
             }
         }
     }
@@ -475,6 +481,83 @@ public class ClientManager implements Runnable{
                 back(from_client,to_client);
             }
         }
+    }
+
+    private void menuAvvisi(Scanner from_client, PrintWriter to_client, Archivio archivio, Direttore direttore){
+        int message_from_client;
+        boolean run = true;
+
+        while(run) {
+            to_client.print("\n\n------------------------");
+            to_client.print("\nMENU AVVISI");
+            to_client.print("\n\n1)Crea Avviso");
+            to_client.print("\n2)Elimina Avviso");
+            to_client.print("\n3)Lista Avvisi");
+            to_client.print("\n4)Indietro\n" + end);
+            to_client.flush();
+
+            while (true) {
+                if (from_client.hasNextInt() == true) {
+                    message_from_client = from_client.nextInt();
+                    break;
+                }
+                from_client.next();
+                to_client.print("Inserisci un numero: " + end);
+                to_client.flush();
+            }
+            switch (message_from_client) {
+                case 1:
+                    to_client.print("\nInserisci testo: "+end);
+                    to_client.flush();
+                    from_client.nextLine();
+                    String testo = from_client.nextLine();
+                    archivio.addAvviso(testo, direttore);
+                    to_client.print("\nAvviso Inviato!");
+                    back(from_client, to_client);
+                    break;
+
+                case 2:
+                    int id;
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                    to_client.print("\n\nID|    DATA    | TESTO");
+                    for(Avviso a : direttore.getListaAvvisi()){
+                        to_client.print("\n"+a.getId()+" - "+formatter.format(a.getData())+" - "+a.getTesto());
+                    }
+                    to_client.print("\n\nInserisci l'ID dell'avviso da eliminare (digita 0 per tornare indietro): "+end);
+                    to_client.flush();
+
+                    boolean num = false;
+                    while (true) {
+                        if (from_client.hasNextInt() == true) {
+                            id = from_client.nextInt();
+                            num = true;
+                            if(direttore.checkIdAvviso(id) || id == 0){
+                                break;
+                            }
+                        }
+                        if(num == false)
+                            from_client.next();
+                        to_client.print("Inserisci un ID valido: " + end);
+                        to_client.flush();
+                    }
+                    if (id == 0) break;
+                    archivio.delAvviso(id, direttore);
+                    to_client.print("\nAvviso Eliminato!");
+                    to_client.flush();
+                    back(from_client,to_client);
+                    break;
+
+                case 3:
+                    visualAvvisi(to_client,archivio);
+                    back(from_client,to_client);
+                    break;
+
+                case 4:
+                    run = false;
+                    break;
+            }
+        }
+
     }
 
     /////////////////////////////////////////////  DOCENTE ////////////////////////////////////////////////////////////
@@ -510,11 +593,13 @@ public class ClientManager implements Runnable{
                     break;
 
                 case 2:
-                    avvisi(from_client, to_client, archivio, docente);
+                    visualAvvisi(to_client, archivio);
+                    back(from_client,to_client);
                     break;
 
                 case 3:
                     run = false;
+                    logout(docente.getUsername());
                     break;
             }
         }
@@ -553,7 +638,7 @@ public class ClientManager implements Runnable{
                     from_client.nextLine();
                     String nomeCorso = from_client.nextLine();
                     archivio.addCorso(docente, nomeCorso);
-                    to_client.println("\nCorso Inserito!");
+                    to_client.println("\nCorso Creato!");
                     back(from_client,to_client);
                     break;
 
@@ -781,6 +866,29 @@ public class ClientManager implements Runnable{
                 if(num == false)
                     from_client.next();
             }
+    }
+
+    private void visualAvvisi(PrintWriter to_client, Archivio archivio){
+
+        TreeSet<Avviso> set = new TreeSet<>();
+        for(Utente u : archivio.getListaUtenti())
+            if(u instanceof Direttore)
+                set.addAll(((Direttore) u).getListaAvvisi());
+
+        to_client.print("\n\n------------------------");
+        to_client.print("\nLISTA AVVISI\n");
+        to_client.print("\n        DATA        |   MITTENTE   | TESTO");
+        to_client.flush();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+
+        for(Avviso a : set) {
+            to_client.print("\n"+formatter.format(a.getData())+" - "+archivio.getCognomeNome(a.getUser())+" - "+a.getTesto());
+            to_client.flush();
+        }
+    }
+
+    private void logout(String username){
+        archivio.logout(username);
     }
 
 }

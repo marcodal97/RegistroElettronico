@@ -34,12 +34,12 @@ public class Client {
                     sb.append(c);
                 }
                 message_from_server = sb.toString();
-                if (message_from_server.equals("Chiusura Connessione...")) return;
+                if (message_from_server.contains("Chiusura Connessione...")) throw new Exception();
+
                 sb.setLength(0);
                 System.out.print(message_from_server);
 
-                while ((message_to_server = from_user.nextLine()).equals(""))
-                    ; //Per non far bloccare il programma quando si preme "invio"
+                while ((message_to_server = from_user.nextLine()).equals("")) ; //Per non far bloccare il programma quando si preme "invio"
 
                 to_server.println(message_to_server);
                 //to_server.flush();

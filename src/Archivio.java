@@ -1,15 +1,15 @@
 import java.io.*;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 
 public class Archivio implements Serializable {
     private static final long serialVersionUID = -4140436349008090061L;
     private LinkedList<Utente> listaUtenti;
+    private LinkedList<String> sessione;
+
 
     public Archivio() {
         this.listaUtenti = new LinkedList<Utente>();
+        this.sessione = new LinkedList<>();
     }
 
     public synchronized LinkedList<Utente> getListaUtenti() {
@@ -26,12 +26,20 @@ public class Archivio implements Serializable {
     }
 
     public synchronized Utente loginCheck(String username, String password){
-        Utente utente =  null;
 
+        if(sessione.contains(username))
+            return null;
         for(Utente u : listaUtenti){
-            if(u.getUsername().equals((username)) && u.getPassword().equals(password)) return u;
+            if(u.getUsername().equals((username)) && u.getPassword().equals(password)) {
+                sessione.add(username);
+                return u;
+            }
         }
-        return utente;
+        return null;
+    }
+
+    public synchronized void logout(String username){
+        sessione.remove(username);
     }
 
     public synchronized void addUtente(Utente utente){
@@ -83,13 +91,21 @@ public class Archivio implements Serializable {
     }
 
     public synchronized void delDocente(String username){
-        Iterator<Utente> iterator = listaUtenti.iterator();
+
+        for(Utente u : listaUtenti)
+            if(u instanceof Docente)
+                if(u.getUsername().equals(username)){
+                    listaUtenti.remove(u);
+                    onFile();
+                    return;
+                }
+        /*Iterator<Utente> iterator = listaUtenti.iterator();
         while(iterator.hasNext()){
             Utente u = iterator.next();
             if(u.getUsername().equals(username))
                 listaUtenti.remove(u);
         }
-        onFile();
+        onFile();*/
     }
 
     public synchronized Docente getDocente(String username){
@@ -103,6 +119,24 @@ public class Archivio implements Serializable {
         LinkedList<Utente> listaord = new LinkedList<>(listaUtenti);
         Collections.sort(listaord);
         return listaord;
+    }
+
+    public synchronized void addAvviso(String testo, Direttore direttore){
+        direttore.addAvviso(testo);
+        onFile();
+    }
+
+    public synchronized String getCognomeNome(String user){
+        String s = " ";
+        for(Utente u : listaUtenti)
+            if(u.getUsername().equals(user))
+                return u.getCognome()+" "+u.getCognome();
+        return s;
+    }
+
+    public synchronized void delAvviso(int id, Direttore direttore){
+        direttore.delAvviso(id);
+        onFile();
     }
 
     @Override
