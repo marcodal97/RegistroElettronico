@@ -9,7 +9,7 @@ public class ClientManager implements Runnable{
     Socket assigned_client;
     Archivio archivio;
     final char end = '§';
-    private volatile boolean running = true;
+    private boolean running = true;
 
     public ClientManager(Socket assigned_client, Archivio archivio) {
         this.assigned_client = assigned_client;

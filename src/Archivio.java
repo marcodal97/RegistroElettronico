@@ -137,7 +137,7 @@ public class Archivio implements Serializable {
         String s = " ";
         for(Utente u : listaUtenti)
             if(u.getUsername().equals(user))
-                return u.getCognome()+" "+u.getCognome();
+                return u.getCognome()+" "+u.getNome();
         return s;
     }
 
