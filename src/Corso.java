@@ -2,7 +2,6 @@ import java.io.Serializable;
 import java.util.*;
 
 public class Corso implements Serializable {
-
     private static final long serialVersionUID = -169089265239444737L;
     private int idCorso;
     private String nomeCorso;

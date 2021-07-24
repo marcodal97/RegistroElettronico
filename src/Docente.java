@@ -3,11 +3,11 @@ import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
 public class Docente extends Utente implements Serializable {
-
+    private static final long serialVersionUID = 437850178713925464L;
     private LinkedList<Corso> listaCorsi;
     private int totCorsi;
     private int totLezioni;
-    private static final long serialVersionUID = 437850178713925464L;
+
 
     public Docente(String username, String password, String nome, String cognome) {
         super(username, password, nome, cognome);

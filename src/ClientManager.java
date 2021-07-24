@@ -213,7 +213,6 @@ public class ClientManager implements Runnable{
                 case 3:
                     run = false;
                     break;
-
             }
         }
     }

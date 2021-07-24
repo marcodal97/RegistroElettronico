@@ -2,11 +2,11 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Avviso implements Serializable, Comparable<Avviso>{
+    private static final long serialVersionUID = 6155605812130458885L;
     private int id;
+    private String dirUser;
     private String testo;
     private Date data;
-    private String dirUser;
-    private static final long serialVersionUID = 6155605812130458885L;
 
     public Avviso(int id, String testo, String dirUser) {
         this.testo = testo;

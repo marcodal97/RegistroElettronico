@@ -2,7 +2,6 @@ import java.net.*;
 import java.io.*;
 
 public class Server {
-
     ServerSocket server_socket;
     Socket client_socket;
     private int port;

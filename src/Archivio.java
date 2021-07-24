@@ -152,5 +152,4 @@ public class Archivio implements Serializable {
                 "listaUtenti=" + listaUtenti +
                 '}';
     }
-
 }

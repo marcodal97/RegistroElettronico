@@ -2,9 +2,9 @@ import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
 public class Direttore extends Utente{
-
-    private LinkedList<Avviso> listaAvvisi;
     private static final long serialVersionUID = 7518339047369784272L;
+    private LinkedList<Avviso> listaAvvisi;
+
 
     public Direttore(String username, String password, String nome, String cognome) {
         super(username, password, nome, cognome);
@@ -48,6 +48,4 @@ public class Direttore extends Utente{
                 "Lista Avvisi ="+listaAvvisi+
                 "}";
     }
-
-
 }

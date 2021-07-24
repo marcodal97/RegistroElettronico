@@ -7,6 +7,7 @@ public abstract class Utente implements Serializable, Comparable<Utente>{
     private String nome;
     private String cognome;
 
+
     public Utente(String username, String password, String nome, String cognome) {
         this.username = username;
         this.password = password;
