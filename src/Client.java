@@ -3,12 +3,10 @@ import java.net.*;
 import java.io.*;
 
 public class Client {
-
     String address_ip;
     int port;
     Socket client_socket;
     final char end = '§';
-
 
     public Client(String ip, int port) {
         this.address_ip = ip;
