@@ -79,108 +79,6 @@ public class ClientManager implements Runnable{
         System.out.println("Connessione chiusa col Client: "+assigned_client.getRemoteSocketAddress());
     }
 
-    private void registrazione(Scanner from_client, PrintWriter to_client){
-        int scelta = 0;
-        String pass = "";
-        Utente utente;
-        HashMap<String, String> dati;
-
-        while(scelta != 1 && scelta != 2) {
-            to_client.print("\n-----REGISTRAZIONE-----");
-            to_client.print("\n1) Registrazione Admin");
-            to_client.print("\n2) Registrazione Docente");
-            to_client.print("\nscelta: "+end);
-            to_client.flush();
-            while(true) {
-                if(from_client.hasNextInt() == true){
-                    scelta = from_client.nextInt();
-                    break;
-                }
-                from_client.next();
-                to_client.print("Inserisci un numero: "+end);
-                to_client.flush();
-            }
-        }
-
-        if (scelta == 1) {
-            while(true) {
-                to_client.print("\nDigita password per registrazione: " + end);
-                to_client.flush();
-                pass = from_client.next();
-                if(pass.equals("passadmin") == false) {
-                    to_client.print("\nPassword errata, ritenta");
-                }else break;
-            }
-            dati = registrazioneUtente(from_client, to_client, archivio);
-            Direttore direttore = new Direttore(dati.get("username"), dati.get("password"), dati.get("nome"), dati.get("cognome"));
-            archivio.addUtente(direttore);
-            to_client.print("\nDirettore registrato!\n\n");
-        }
-
-        if (scelta == 2) {
-            while(true) {
-                to_client.print("\nDigita password per registrazione: " + end);
-                to_client.flush();
-                pass = from_client.next();
-                if(pass.equals("passdoc") == false) {
-                    to_client.print("\nPassword errata, ritenta");
-                }else break;
-            }
-            dati = registrazioneUtente(from_client, to_client, archivio);
-            Docente docente = new Docente(dati.get("username"), dati.get("password"), dati.get("nome"), dati.get("cognome"));
-            archivio.addUtente(docente);
-            to_client.print("\nDocente registrato!\n\n");
-        }
-    }
-
-    private HashMap<String, String> registrazioneUtente(Scanner from_client, PrintWriter to_client, Archivio archivio){
-        HashMap<String, String> dati = new HashMap<>();
-
-        to_client.print("\n-----------------------");
-        while(true) {
-            to_client.print("\nInserisci username: " + end);
-            to_client.flush();
-            dati.put("username", from_client.next());
-            Utente utente = archivio.getUtente(dati.get("username"));
-            if(utente == null)
-                break;
-            else to_client.print("\nUsername già registrato!");
-        }
-        to_client.print("\nInserisci password: "+end);
-        to_client.flush();
-        dati.put("password", from_client.next());
-        to_client.print("\nInserisci Nome: "+end);
-        to_client.flush();
-        from_client.nextLine();
-        dati.put("nome", from_client.nextLine());
-        to_client.print("\nInserisci Cognome: "+end);
-        to_client.flush();
-        dati.put("cognome", from_client.nextLine());
-
-        return dati;
-    }
-
-    private Utente login(Scanner from_client, PrintWriter to_client, Archivio archivio){
-        String username;
-        String password;
-        Utente utente = null;
-
-        while (true) {
-            to_client.print("\nInserisci username: " + end);
-            to_client.flush();
-            username = from_client.next();
-            to_client.print("Inserisci password: "+ end);
-            to_client.flush();
-            password = from_client.next();
-            utente = archivio.loginCheck(username, password);
-
-            if (utente == null){
-                to_client.print("\nDati Errati o Login già effettuato\n");
-            }else break;
-        }
-        return utente;
-    }
-
 //////////////////////////////////////////////// DIRETTORE ////////////////////////////////////////////////////////////
 
     private void direttore(Scanner from_client, PrintWriter to_client, Archivio archivio, Direttore direttore){
@@ -813,6 +711,111 @@ public class ClientManager implements Runnable{
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    private void registrazione(Scanner from_client, PrintWriter to_client){
+    int scelta = 0;
+    String pass = "";
+    Utente utente;
+    HashMap<String, String> dati;
+
+    while(scelta != 1 && scelta != 2) {
+        to_client.print("\n-----REGISTRAZIONE-----");
+        to_client.print("\n1) Registrazione Admin");
+        to_client.print("\n2) Registrazione Docente");
+        to_client.print("\nscelta: "+end);
+        to_client.flush();
+        while(true) {
+            if(from_client.hasNextInt() == true){
+                scelta = from_client.nextInt();
+                break;
+            }
+            from_client.next();
+            to_client.print("Inserisci un numero: "+end);
+            to_client.flush();
+        }
+    }
+
+    if (scelta == 1) {
+        while(true) {
+            to_client.print("\nDigita password per registrazione: " + end);
+            to_client.flush();
+            pass = from_client.next();
+            if(pass.equals("passadmin") == false) {
+                to_client.print("\nPassword errata, ritenta");
+            }else break;
+        }
+        dati = registrazioneUtente(from_client, to_client, archivio);
+        Direttore direttore = new Direttore(dati.get("username"), dati.get("password"), dati.get("nome"), dati.get("cognome"));
+        archivio.addUtente(direttore);
+        to_client.print("\nDirettore registrato!\n\n");
+    }
+
+    if (scelta == 2) {
+        while(true) {
+            to_client.print("\nDigita password per registrazione: " + end);
+            to_client.flush();
+            pass = from_client.next();
+            if(pass.equals("passdoc") == false) {
+                to_client.print("\nPassword errata, ritenta");
+            }else break;
+        }
+        dati = registrazioneUtente(from_client, to_client, archivio);
+        Docente docente = new Docente(dati.get("username"), dati.get("password"), dati.get("nome"), dati.get("cognome"));
+        archivio.addUtente(docente);
+        to_client.print("\nDocente registrato!\n\n");
+    }
+}
+
+    private HashMap<String, String> registrazioneUtente(Scanner from_client, PrintWriter to_client, Archivio archivio){
+        HashMap<String, String> dati = new HashMap<>();
+
+        to_client.print("\n-----------------------");
+        while(true) {
+            to_client.print("\nInserisci username: " + end);
+            to_client.flush();
+            dati.put("username", from_client.next());
+            Utente utente = archivio.getUtente(dati.get("username"));
+            if(utente == null)
+                break;
+            else to_client.print("\nUsername già registrato!");
+        }
+        to_client.print("\nInserisci password: "+end);
+        to_client.flush();
+        dati.put("password", from_client.next());
+        to_client.print("\nInserisci Nome: "+end);
+        to_client.flush();
+        from_client.nextLine();
+        dati.put("nome", from_client.nextLine());
+        to_client.print("\nInserisci Cognome: "+end);
+        to_client.flush();
+        dati.put("cognome", from_client.nextLine());
+
+        return dati;
+    }
+
+    private Utente login(Scanner from_client, PrintWriter to_client, Archivio archivio){
+        String username;
+        String password;
+        Utente utente = null;
+
+        while (true) {
+            to_client.print("\nInserisci username: " + end);
+            to_client.flush();
+            username = from_client.next();
+
+            if(archivio.isLogged(username)) {
+                to_client.print("\nLogin già effettuato\n");
+                continue;
+            }
+            to_client.print("Inserisci password: "+ end);
+            to_client.flush();
+            password = from_client.next();
+            utente = archivio.loginCheck(username, password);
+            if (utente == null){
+                to_client.print("\nDati Errati\n");
+            }else break;
+        }
+        return utente;
+    }
 
     private int sceltaCorso(Scanner from_client, PrintWriter to_client, Archivio archivio, Docente docente){
 

@@ -4,12 +4,15 @@ import java.util.*;
 public class Archivio implements Serializable {
     private static final long serialVersionUID = -4140436349008090061L;
     private LinkedList<Utente> listaUtenti;
-    private LinkedList<String> sessione;
-
+    private transient LinkedList<String> sessione;
 
     public Archivio() {
         this.listaUtenti = new LinkedList<Utente>();
         this.sessione = new LinkedList<>();
+    }
+
+    public synchronized void creaSessione(){
+        sessione = new LinkedList<>();
     }
 
     public synchronized LinkedList<Utente> getListaUtenti() {
@@ -27,8 +30,6 @@ public class Archivio implements Serializable {
 
     public synchronized Utente loginCheck(String username, String password){
 
-        if(sessione.contains(username))
-            return null;
         for(Utente u : listaUtenti){
             if(u.getUsername().equals((username)) && u.getPassword().equals(password)) {
                 sessione.add(username);
@@ -36,6 +37,12 @@ public class Archivio implements Serializable {
             }
         }
         return null;
+    }
+
+    public synchronized boolean isLogged(String username){
+        if(sessione.contains(username))
+            return true;
+        else return false;
     }
 
     public synchronized void logout(String username){
@@ -145,4 +152,5 @@ public class Archivio implements Serializable {
                 "listaUtenti=" + listaUtenti +
                 '}';
     }
+
 }

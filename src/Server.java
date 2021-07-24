@@ -23,6 +23,7 @@ public class Server {
             ObjectInputStream os = new ObjectInputStream(f);
             archivio = (Archivio) (os.readObject());
             os.close();
+            archivio.creaSessione();
         } catch (IOException e) {
             archivio = new Archivio();
             e.printStackTrace();

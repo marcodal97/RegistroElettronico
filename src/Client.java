@@ -40,7 +40,6 @@ public class Client {
                 sb.setLength(0);
                 System.out.print(message_from_server);
 
-                //while ((message_to_server = from_user.nextLine()).equals("")) ; //Per non far bloccare il programma quando si preme "invio"
                 while(true){
                     message_to_server = from_user.nextLine();
                     if(message_to_server.equals("") || message_to_server.contains(Character.toString(end))){ }
