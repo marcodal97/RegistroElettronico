@@ -15,24 +15,24 @@ public class Lezione implements Serializable, Comparable<Lezione>{
         this.argomento = argomento;
     }
 
-    public int getIdLezione() {
+    public synchronized int getIdLezione() {
         return idLezione;
     }
 
-    public Date getData() {
+    public synchronized Date getData() {
         return data;
     }
 
-    public int getOre() {
+    public synchronized int getOre() {
         return ore;
     }
 
-    public String getArgomento() {
+    public synchronized String getArgomento() {
         return argomento;
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
 
         return "Lezione{" +
                 "idLezione=" + idLezione +
@@ -43,7 +43,7 @@ public class Lezione implements Serializable, Comparable<Lezione>{
     }
 
     @Override
-    public int compareTo(Lezione lezione) {
+    public synchronized int compareTo(Lezione lezione) {
         if(lezione.getData().before(this.data)) return -1;
         if(lezione.getData().after(this.data)) return 1;
         return 0;

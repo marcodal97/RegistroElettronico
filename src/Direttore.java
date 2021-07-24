@@ -11,7 +11,7 @@ public class Direttore extends Utente{
         listaAvvisi = new LinkedList<>();
     }
 
-    public void addAvviso(String testo){
+    public synchronized void addAvviso(String testo){
         int id;
         try{
             Avviso a = listaAvvisi.getLast();
@@ -23,13 +23,13 @@ public class Direttore extends Utente{
         listaAvvisi.add(avviso);
     }
 
-    public boolean checkIdAvviso(int id){
+    public synchronized boolean checkIdAvviso(int id){
         for(Avviso a : listaAvvisi)
             if(a.getId() == id) return true;
         return false;
     }
 
-    public void delAvviso(int id){
+    public synchronized void delAvviso(int id){
         for(Avviso a : listaAvvisi)
             if(a.getId()==id){
                 listaAvvisi.remove(a);
@@ -37,12 +37,12 @@ public class Direttore extends Utente{
             }
     }
 
-    public LinkedList<Avviso> getListaAvvisi(){
+    public synchronized LinkedList<Avviso> getListaAvvisi(){
         return listaAvvisi;
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return "\n\nDirettore{" +
                 super.toString()+
                 "Lista Avvisi ="+listaAvvisi+

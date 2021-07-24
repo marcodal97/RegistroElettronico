@@ -18,27 +18,27 @@ public class Corso implements Serializable {
         this.totLezioni = 0;
     }
 
-    public int getIdCorso() {
+    public synchronized int getIdCorso() {
         return idCorso;
     }
 
-    public String getNomeCorso() {
+    public synchronized String getNomeCorso() {
         return nomeCorso;
     }
 
-    public LinkedList<Lezione> getListaLezioni() {
+    public synchronized LinkedList<Lezione> getListaLezioni() {
         return listaLezioni;
     }
 
-    public int getTotOre() {
+    public synchronized int getTotOre() {
         return totOre;
     }
 
-    public int getTotLezioni() {
+    public synchronized int getTotLezioni() {
         return totLezioni;
     }
 
-    public void addLezione(Date data, int ore, String argomento){
+    public synchronized void addLezione(Date data, int ore, String argomento){
         int id;
 
         try{
@@ -54,22 +54,22 @@ public class Corso implements Serializable {
         addNumLezione();
     }
 
-    public void addOre(int ore){
+    public synchronized void addOre(int ore){
         this.totOre = this.totOre+ore;
     }
 
-    public void addNumLezione(){
+    public synchronized void addNumLezione(){
         this.totLezioni = this.totLezioni + 1;
     }
 
-    public boolean checkId(int id){
+    public synchronized boolean checkId(int id){
         for(Lezione l : listaLezioni){
             if(l.getIdLezione() == id) return true;
         }
         return false;
     }
 
-    public void delLezione(int id){
+    public synchronized void delLezione(int id){
         for(Lezione l : listaLezioni){
             if(l.getIdLezione()==id){
                 totOre = totOre - l.getOre();
@@ -81,14 +81,14 @@ public class Corso implements Serializable {
 
     }
 
-    public LinkedList<Lezione> ordinaLezioni(){
+    public synchronized LinkedList<Lezione> ordinaLezioni(){
         LinkedList<Lezione> lez = new LinkedList<>(listaLezioni);
         Collections.sort(lez);
         return lez;
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return "Corso{" +
                 "\nidCorso=" + idCorso +
                 ", nomeCorso='" + nomeCorso + '\'' +

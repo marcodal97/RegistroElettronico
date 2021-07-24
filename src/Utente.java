@@ -1,5 +1,4 @@
 import java.io.Serializable;
-import java.util.LinkedList;
 
 public abstract class Utente implements Serializable, Comparable<Utente>{
     private static final long serialVersionUID = -5354313318998779641L;
@@ -15,36 +14,35 @@ public abstract class Utente implements Serializable, Comparable<Utente>{
         this.cognome = cognome;
     }
 
-    @Override
-    public String toString() {
-        return
-                "username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", nome='" + nome + '\'' +
-                ", cognome='" + cognome + '\'' +
-                '}';
-    }
-
-    public String getUsername() {
+    public synchronized String getUsername() {
         return username;
     }
 
-    public String getPassword() {
+    public synchronized String getPassword() {
         return password;
     }
 
-    public String getNome() {
+    public synchronized String getNome() {
         return nome;
     }
 
-    public String getCognome() {
+    public synchronized String getCognome() {
         return cognome;
     }
 
     @Override
-    public int compareTo(Utente utente)
+    public synchronized int compareTo(Utente utente)
     {
         return cognome.compareTo(utente.getCognome());
     }
 
+    @Override
+    public synchronized String toString() {
+        return
+                "username='" + username + '\'' +
+                        ", password='" + password + '\'' +
+                        ", nome='" + nome + '\'' +
+                        ", cognome='" + cognome + '\'' +
+                        '}';
+    }
 }

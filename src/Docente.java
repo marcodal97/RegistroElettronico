@@ -16,19 +16,19 @@ public class Docente extends Utente implements Serializable {
         this.totLezioni = 0;
     }
 
-    public LinkedList<Corso> getListaCorsi() {
+    public synchronized LinkedList<Corso> getListaCorsi() {
         return listaCorsi;
     }
 
-    public int getTotCorsi() {
+    public synchronized int getTotCorsi() {
         return totCorsi;
     }
 
-    public int getTotLezioni() {
+    public synchronized int getTotLezioni() {
         return totLezioni;
     }
 
-    public void addCorso(String nome){
+    public synchronized void addCorso(String nome){
         int id;
 
         try{
@@ -42,36 +42,36 @@ public class Docente extends Utente implements Serializable {
         listaCorsi.add(corso);
     }
 
-    public void addNumLezioni(){
+    public synchronized void addNumLezioni(){
         totLezioni = totLezioni+1;
     }
 
-    public void remNumLezioni(){
+    public synchronized void remNumLezioni(){
         totLezioni = totLezioni - 1;
     }
 
-    public boolean checkIdCorso(int id){
+    public synchronized boolean checkIdCorso(int id){
         for(Corso c : listaCorsi){
             if(c.getIdCorso() == id) return true;
         }
         return false;
     }
 
-    public Corso getCorso(int id){
+    public synchronized Corso getCorso(int id){
         for(Corso c : listaCorsi){
             if(c.getIdCorso()==id) return c;
         }
         return null;
     }
 
-    public boolean checkCorso(int id){
+    public synchronized boolean checkCorso(int id){
         for(Corso c : listaCorsi){
             if(c.getIdCorso() == id) return true;
         }
         return false;
     }
 
-    public void delCorso(int id) {
+    public synchronized void delCorso(int id) {
         for (Corso c : listaCorsi) {
             if (c.getIdCorso() == id) {
                 totCorsi = totCorsi-1;
@@ -83,7 +83,7 @@ public class Docente extends Utente implements Serializable {
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return "\n\nDocente{" +
                 super.toString()+
                 "listaCorsi=" + listaCorsi +

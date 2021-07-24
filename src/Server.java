@@ -1,4 +1,3 @@
-import java.util.*;
 import java.net.*;
 import java.io.*;
 
@@ -33,7 +32,6 @@ public class Server {
             System.out.println("2Creazione nuovo archivio");
         }
 
-
         try {
             server_socket = new ServerSocket(port);
 
@@ -51,16 +49,6 @@ public class Server {
             e.printStackTrace();
         }
     }
-
-    public void exit(){
-        try {
-            server_socket.close();
-            System.exit(0);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     public static void main(String[] args) {
 	Server server = new Server(5000);

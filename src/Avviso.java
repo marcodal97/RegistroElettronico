@@ -15,31 +15,31 @@ public class Avviso implements Serializable, Comparable<Avviso>{
         this.dirUser = dirUser;
     }
 
-    public int getId() {
+    public synchronized int getId() {
         return id;
     }
 
-    public String getTesto() {
+    public synchronized String getTesto() {
         return testo;
     }
 
-    public Date getData() {
+    public synchronized Date getData() {
         return data;
     }
 
-    public String getUser(){
+    public synchronized String getUser(){
         return dirUser;
     }
 
     @Override
-    public int compareTo(Avviso o) {
+    public synchronized int compareTo(Avviso o) {
         if(o.getData().before(this.data)) return -1;
         if(o.getData().after(this.data)) return 1;
         return 0;
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return "\nAvviso{" +
                 "id=" + id +
                 ", testo='" + testo + '\'' +

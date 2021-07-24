@@ -25,9 +25,7 @@ public class ClientManager implements Runnable{
 
         while(running){
             try {
-
                 int message_from_client;
-
                 try {
                     from_client = new Scanner(assigned_client.getInputStream());
                     to_client = new PrintWriter(assigned_client.getOutputStream());
@@ -107,7 +105,7 @@ public class ClientManager implements Runnable{
             }
             switch (message_from_client) {
                 case 1:
-                    menuDocDirettore(from_client, to_client, direttore);
+                    menuDocDirettore(from_client, to_client);
                     break;
 
                 case 2:
@@ -122,7 +120,7 @@ public class ClientManager implements Runnable{
         }
     }
 
-    private void menuDocDirettore(Scanner from_client, PrintWriter to_client, Direttore direttore){
+    private void menuDocDirettore(Scanner from_client, PrintWriter to_client){
         boolean run = true;
         int message_from_client;
         int num;
@@ -370,7 +368,7 @@ public class ClientManager implements Runnable{
         int scelta;
 
         while(true) {
-            scelta = sceltaCorso(from_client, to_client, archivio, docente);
+            scelta = sceltaCorso(from_client, to_client, docente);
             if (scelta == 0) return;
             Corso corso;
             if (docente.checkCorso(scelta)) {
@@ -584,7 +582,7 @@ public class ClientManager implements Runnable{
         int scelta;
 
         while(true) {
-            scelta = sceltaCorso(from_client, to_client, archivio, docente);
+            scelta = sceltaCorso(from_client, to_client, docente);
             if (scelta == 0) return;
 
             Corso corso;
@@ -703,11 +701,6 @@ public class ClientManager implements Runnable{
         }
     }
 
-    private void avvisi(Scanner from_client, PrintWriter to_client, Archivio archivio, Docente docente){
-        to_client.print("\nAvvisi"+end);
-        to_client.flush();
-        return;
-    }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -817,7 +810,7 @@ public class ClientManager implements Runnable{
         return utente;
     }
 
-    private int sceltaCorso(Scanner from_client, PrintWriter to_client, Archivio archivio, Docente docente){
+    private int sceltaCorso(Scanner from_client, PrintWriter to_client, Docente docente){
 
         LinkedList<Corso> lista = docente.getListaCorsi();
 
