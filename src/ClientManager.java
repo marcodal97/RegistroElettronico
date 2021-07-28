@@ -464,11 +464,11 @@ public class ClientManager implements Runnable{
 
         System.out.println(archivio.toString());
 
-        to_client.print("\n\nLoginDocente: "+docente.getUsername());
+        to_client.print("\n\nLogin Docente: "+docente.getUsername());
         while(run) {
             to_client.print("\n\n------------------------");
             to_client.print("\nMENU PRINCIPALE");
-            to_client.print("\n\n1)Menù corsi");
+            to_client.print("\n\n1)Menu corsi");
             to_client.print("\n2)Avvisi");
             to_client.print("\n3)Logout\n" + end);
             to_client.flush();
